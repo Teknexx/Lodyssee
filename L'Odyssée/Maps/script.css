@@ -1,0 +1,40 @@
+canvas{
+	background-color: rgb(58,157,35);
+	position: absolute;
+  	top: 50%; 
+  	left: 50%; 
+  	transform: translate(-50%, -50%);
+}
+body{
+	background-color: #555558;
+}
+h1{
+	text-align: center;
+	color: #ef2626;
+	text-shadow: 3px 3px 5px black;
+		}
+.odyssee{
+	text-shadow: 1px 1px 3px black;
+	color: #ef2626;
+}
+p{
+	text-shadow: 0 0 3px red;
+	color: #9C9C9C;
+	font-size: 30px;
+	text-align: center;
+	margin-top: 50px;
+}
+.back{
+	background-color: #636366;
+}
+.btn{
+	font-size: 20px;
+	border-radius: 25px;
+	width: 200px; 
+	height: 200px; 
+	border-color: #268826; 
+	background-color:#268826;
+	position: absolute;
+	top: 50%; left: 50%; 
+	transform: translate(-50%, -50%);
+}
