@@ -1,0 +1,257 @@
+<!-- Code par TekneX -->
+<!-- https://github.com/Teknexx -->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Combat</title>
+	<link rel="icon" type="png" href="Images/iconehero.png"/>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="script.css">
+</head>
+<body>
+
+<canvas id="canvas" width="500" height="500" style="background-color: white;">Votre naviguateur ne navigue pas sur du canvas</canvas>
+
+
+<script type="text/javascript">
+	var canvas = document.getElementById('canvas');
+	var context = canvas.getContext('2d');
+	var hero = new Image();
+	var sldt = new Image();
+	var forest = new Image();
+    hero.src = 'Images/hero.png';
+    sldt.src = 'Images/soldat.png';
+    forest.src = 'Images/foret.png';
+
+    var largeur = 500;
+	var hauteur = 500;
+
+	var attaque = 10;
+	var coupspecial = 30;
+	var manacoupspecial = 10;
+	var soin = 50;
+	var manasoin = 20;
+	var HP = 200;
+	var HPmax = 200;
+	var mana = 100;
+	var manamax = 100;
+	var defense = false;
+
+	var attaquennemi = 10;
+	var coupspecialennemi = 20;
+	var HPennemi = 150;
+	var HPennemimax = 150;
+
+	var played = false;
+
+	//Chargement
+	context.font = "15pt Calibri", //
+	context.fillStyle= "rgb(0, 0, 0)";
+	context.fillText("Chargement...", 200, 50);
+	setTimeout(function(){ //delay(ms) de chargement
+		Combat()
+	}, 1000); //fin delay 
+	
+	function Combat() {
+		context.clearRect(0, 0, largeur, hauteur);
+
+		context.drawImage(forest, 0, 0, 500, 350); //fond de combat (foret)
+
+		context.drawImage(sldt, 300, 150, 150, 150); //ennemi
+		context.drawImage(hero, 70, 178, 80, 120); //héros
+
+		
+		context.fillStyle= "#afafaf";// rect gauche
+		context.fillRect(0, 350, 250, 150);
+
+		context.fillStyle= "#bfbfbf";//rect droite
+		context.fillRect(250, 350, 250, 150);
+
+		context.font = "15pt Calibri", //STATS
+		context.fillStyle= "rgb(0, 0, 0)";
+		context.fillText("STATS", 10, 370);
+
+		context.font = "15pt Calibri", //PV ALLIÉ
+		context.fillStyle= "rgb(0, 0, 0)";
+		context.fillText("PV", 10, 400);
+
+		context.font = "15pt Calibri", //MANA ALLIÉ
+		context.fillStyle= "rgb(0, 0, 0)";
+		context.fillText("MANA", 10, 450);
+
+		context.font = "15pt Calibri", //AFFICHAGE HP ALLIÉ
+		context.fillStyle= "rgb(9, 161, 35)";
+		context.fillText(HP + "/" + HPmax, 50, 420);
+
+		context.font = "15pt Calibri", //AFFICHAGE MANA ALLIÉ
+		context.fillStyle= "rgb(0, 0, 255)";
+		context.fillText(mana + "/" + manamax + " (+5/tour)", 50, 470);
+
+		context.font = "15pt Calibri", //ATK
+		context.fillStyle= "rgb(0, 0, 0)";
+		context.fillText("① Attaque", 280, 380);
+
+		context.font = "15pt Calibri", //Coup Spécial
+		context.fillStyle= "rgb(0, 0, 0)";
+		context.fillText("② Coup Spécial (" + manacoupspecial + ")", 280, 413);
+
+		context.font = "15pt Calibri", //Soin
+		context.fillStyle= "rgb(0, 0, 0)";
+		context.fillText("③ Soin (" + manasoin + ")", 280, 446);
+
+		context.font = "15pt Calibri", //Def
+		context.fillStyle= "rgb(0, 0, 0)";
+		context.fillText("④ Défense", 280, 479);
+		
+		context.font = "15pt Calibri", //AFFICHAGE HP ennemi
+		context.fillStyle= "rgb(0,0,0)";
+		context.fillText(HPennemi + "/" + HPennemimax, 365, 320);
+
+		}
+
+
+	document.addEventListener('keydown', function(event) {
+
+		//-------Tour joueur-------
+
+		//prise de touche
+		if (played == false) {
+			var touche = event.key;
+
+
+			if ((touche == "&") || (touche == "é") || (touche == "\"") || (touche == "\'") ) {
+
+				if (touche == "&") { //attaque
+					HPennemi = HPennemi-attaque;
+					played = true;
+					Combat()					
+					context.font = "15pt Calibri", //attaque
+					context.fillStyle= "#9E0202";
+					context.fillText("-" + attaque, 360, 90);
+				}
+				if (touche == "é") { //coup spécial
+					if(mana>=manacoupspecial){ //si pas assez de mana, on recommence
+						HPennemi = HPennemi - coupspecial;
+						mana = mana - manacoupspecial;
+						played = true;
+						Combat()					
+						context.font = "15pt Calibri", //attaque spé
+						context.fillStyle= "#9E0202";
+						context.fillText("-" + coupspecial, 360, 90);
+
+					}else{
+						Combat()					
+						context.font = "15pt Calibri", //recommencez
+						context.fillStyle= "rgb(0, 0, 0)";
+						context.fillText("Recommencez", 200, 50);
+					}
+				}
+				if (touche == "\"") { //soin
+					if(mana>=manasoin) {//si pas assez de mana, on recommence
+						HP = HP + soin;
+						mana = mana - manasoin;
+						played = true;
+						Combat()					
+						context.font = "15pt Calibri", //Soin
+						context.fillStyle= "#35D405";
+						context.fillText("+" + soin, 100, 90);
+						if (HP>HPmax) { //si trop de hp, on bloque au max
+							HP = HPmax;
+							Combat()					
+							context.font = "15pt Calibri", //soin
+							context.fillStyle= "#35D405";
+							context.fillText("+" + soin, 100, 90);
+						}
+					}else{
+						Combat()					
+						context.font = "15pt Calibri", //recommencez
+						context.fillStyle= "rgb(0, 0, 0)";
+						context.fillText("Recommencez", 200, 50);
+					}
+				}
+				if (touche == "\'") { //défense
+					defense = true;
+					played = true;
+					Combat()					
+					context.font = "15pt Calibri", //Def
+					context.fillStyle= "rgb(0, 0, 0)";
+					context.fillText("Défense", 100, 90);
+				}
+
+				//-------Tour ennemi-------
+
+				if (played == true) {
+
+					//Test victoire
+					if (HPennemi<=0) {
+						document.location.href="Map3.htm";
+					}
+
+					setTimeout(function(){ //delay(ms)
+						Combat()
+						var random = Math.floor(Math.random()*11);
+
+						if (random<4) { //pourcentage d'avoir un coup spécial : 20%
+							if (defense==true) {
+								var degats = Math.round( 0.75 * coupspecialennemi ) ;
+								HP = HP - degats;				
+								context.font = "15pt Calibri", //Def
+								context.fillStyle= "#9E0202";
+								context.fillText("-" + degats, 90, 90);
+							}else{
+								HP = HP - coupspecialennemi;
+								context.font = "15pt Calibri", //Def
+								context.fillStyle= "#9E0202";
+								context.fillText("-" + coupspecialennemi, 90, 90);
+							}
+						}else{
+							if (defense==true) {
+								var degats = Math.round( 0.75 * attaquennemi );
+								HP = HP - degats;
+								context.font = "15pt Calibri", //Def
+								context.fillStyle= "#9E0202)";
+								context.fillText("-" + degats, 90, 90);
+							}else{
+								HP = HP - attaquennemi;
+								context.font = "15pt Calibri", //Def
+								context.fillStyle= "#9E0202";
+								context.fillText("-" + attaquennemi, 90, 90);
+							}
+						}
+
+						//Test défaite
+						if (HP<=0) {
+							context.font = "15pt Calibri", //Def
+							context.fillStyle= "rgb(0, 0, 0)";
+							context.fillText("Game Over", 100, 90);
+							
+							
+							document.location.href="Game_Over.htm";
+						}
+
+						//fin du tour, remise de mana
+						mana = mana + 5;	
+						
+						if (mana>manamax) { //si trop de mana, on bloque au max
+							mana = manamax;
+						}
+
+						
+						setTimeout(function(){ //delay(ms)
+							Combat()
+						}, 1500);
+						played = false;
+					}, 1500); //fin delay 
+				}
+			}
+		}
+	});
+
+	
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!-- Code par TekneX -->
+<!-- https://github.com/Teknexx -->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Salle du Boss</title>
+	<meta charset="utf-8">
+	<link rel="icon" type="png" href="Images/iconehero.png"/>
+	<link rel="stylesheet" type="text/css" href="script.css">
+</head>
+<body>
+	<canvas id="canvas" width="500" height="500" style="background-color: rgb(123, 98, 78">Votre naviguateur ne navigue pas sur du canvas</canvas>
+
+<script type="text/javascript">
+
+
+	var canvas = document.getElementById('canvas');
+	var context = canvas.getContext('2d');
+	var boss = new Image();
+    var hero_droite = new Image();
+	var hero_gauche = new Image();
+	boss.src = "Images/troll_inverse.png";
+	hero_droite.src = "Images/hero_droite.png";
+    hero_gauche.src = "Images/hero_gauche.png";
+
+    var senshero = "gauche";
+
+	var largeur = 500;
+	var hauteur = 500;
+
+	var rayon = 20;
+	var centrex = largeur - rayon;
+	var centrey = largeur / 2;
+
+	var pxldepl = 10;
+
+	var rayonennemi = 59;
+    var centrexennemi = 150;
+    var centreyennemi = 250;
+
+	var testColision = false;
+	var tabObstacles = [    //[type,coordonnée x, coordonnée y, rayon]
+		//bordures
+		["rectangle",0, 0, 500, 50], //haut
+		["rectangle",0, 450, 500, 50], //bas
+		["rectangle",0, 0, 50, 500], //gauche
+		["rectangle",450, 0, 50, 225], //droite haut
+		["rectangle",450, 275, 50, 225]//droite bas
+	]; 
+
+	document.addEventListener('keydown', function(event) {
+
+		//touches deplacement
+		var touche = event.key;
+
+		if (touche == "ArrowUp") {
+			centrey = centrey - pxldepl;
+			Colision()
+			if (testColision==true) {
+			centrey = centrey + pxldepl;
+			}
+		}
+		if (touche == "ArrowLeft") {
+			senshero = "gauche";
+			centrex = centrex - pxldepl;
+			Colision()
+			if (testColision==true) {
+			centrex = centrex + pxldepl;
+			}
+		}
+		if (touche == "ArrowDown") {
+			centrey = centrey + pxldepl;
+			Colision()
+			if (testColision==true) {
+			centrey = centrey - pxldepl;
+			}
+		}
+		if (touche == "ArrowRight") {
+			senshero = "droite";
+			centrex = centrex + pxldepl;
+			Colision()
+			if (testColision==true) {
+			centrex = centrex - pxldepl;
+			}
+		}
+
+		//map précédente
+		if (0>(centrey-rayon)) {
+			document.location.href="Map2_retour.htm";
+		}
+		//map suivante
+		if (500<(centrex+rayon)) {
+			document.location.href="Map3_retour.htm";
+		}
+		//colision ennemi
+	    if (rayon+rayonennemi >= Math.sqrt(Math.pow(centrexennemi-centrex,2)+Math.pow(centreyennemi-centrey,2))){
+	    	document.location.href="Boss.htm";
+		}
+
+		//blocage bordures
+		if (centrex>=(largeur-rayon)) {
+			centrex = (largeur-rayon);
+		}
+		if (centrex<=rayon) {
+			centrex = rayon;
+		}
+		if (centrey>=(largeur-rayon)) {
+			centrey = (largeur-rayon);
+		}
+		if (centrey<=rayon) {
+			centrey = rayon;
+		}
+
+
+
+	});
+
+
+	//Colisions 
+    function Colision() {
+
+		testColision = false;
+		for (var i = 0; i < tabObstacles.length; i++) {
+			if (tabObstacles[i][0]=="cercle") {
+				testColision = testColision || testColisionCirc(centrex,centrey,rayon,tabObstacles[i][1],tabObstacles[i][2],tabObstacles[i][3]);
+			}
+			if (tabObstacles[i][0]=="rectangle") {
+				testColision = testColision || testColisionRect(centrex,centrey,rayon,tabObstacles[i][1],tabObstacles[i][2],tabObstacles[i][3],tabObstacles[i][4]);
+			}
+		}
+	}
+
+	function testColisionCirc(xp,yp,rp,xc,yc,rc){
+
+		var test = false;
+		if (rp+rc >= Math.sqrt(Math.pow(xc-xp,2)+Math.pow(yc-yp,2))){
+			test = true;
+		} return test;
+
+	}
+
+	function testColisionRect(xp,yp,rp,xrect,yrect,larg,haut){
+
+		var test = false;
+		var xfin = xrect + larg;
+		var yfin = yrect + haut;
+		if ( (xp+rp)>xrect && (xp-rp)<xfin && (yp+rp)>yrect && (yp-rp)<yfin ){
+			test = true;
+		} return test;
+
+	}
+
+
+
+	boucle()
+
+	function boucle() {
+
+
+		context.clearRect(0, 0, largeur, hauteur);
+
+		//BATIMENT et CHEMIN
+		context.fillStyle= "#ababab"; //Mur HAUT
+		context.fillRect(0, 0, 500, 50); 
+
+		context.fillStyle= "#ababab"; //Mur BAS
+		context.fillRect(0, 450, 500, 50); 
+
+		context.fillStyle= "#f5deb3"; //Rect Chemin 
+		context.fillRect(350, 160, 150, 180); 
+
+		context.fillStyle= "#ababab"; //gauche
+		context.fillRect(0, 0, 50, 500); 
+
+		context.fillStyle= "#ababab"; //droite haut
+        context.fillRect(450, 0, 50, 225);
+
+        context.fillStyle= "#ababab"; //droite bas
+        context.fillRect(450, 275, 50, 225);
+
+	    if (senshero == "droite") {
+	    	context.drawImage(hero_droite, centrex - 20, centrey - 20, 40, 40);
+	    }else{
+	    	context.drawImage(hero_gauche, centrex - 20, centrey - 20, 40, 40);
+	    }
+
+	    context.drawImage(boss, 90, 190, 120, 120); //boss
+
+		requestAnimationFrame(boucle);
+	} 
+
+
+
+</script>
+</body>
+</html>
